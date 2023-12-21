@@ -1,21 +1,16 @@
-from zipfile import ZipFile 
-from fnmatch import fnmatch
 import os
+import zipfile
 
-filezip = "zip-25000.zip"
-txtfile = "password.txt"
-
-while(filezip):
-    print(0,txtfile,filezip)
-    pswd = open(txtfile,"r").read()
-    ZipFile(filezip,"r").extractall(pwd=pswd.strip().encode('ascii'))
-
-    files = ZipFile(filezip,"r").namelist()
-    os.remove(filezip)
-    print(1,files)
-
-    filezip = files[0] if (fnmatch(files[0], "*.zip")) else False
-    txtfile = files[1] if (fnmatch(files[1], "*.txt")) else False
-    print(2,txtfile,filezip)
+def extract_zip(file_name, pswd):
+    with zipfile.ZipFile(file_name, 'r') as zip_ref:
+        zip_ref.extractall(pwd=pswd.encode('ascii'))
+    if file_name.endswith('.zip'):
+        os.remove(file_name)
+    print(f"extracted {file_name} : {pswd}")
 
 
+zip_files = [file_name for file_name in os.listdir() if file_name.endswith('.zip')]
+while zip_files:
+    pswd = open("password.txt", "r").read().strip()
+    extract_zip(zip_files[0],pswd)
+    zip_files = [file_name for file_name in os.listdir() if file_name.endswith('.zip')]
